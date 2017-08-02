@@ -8,6 +8,7 @@ float AX, AY, AZ, MX, MY, MZ;
 double roll, pitch,heading, croll, cpitch, cheading;
 int quadColor;
 //I commented
+//Lawrence Commented
 double Obstacle1;
 
 Ultrasonic ultrasonic1(13,12); //X sensor
