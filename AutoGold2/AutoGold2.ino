@@ -128,6 +128,29 @@ float delta_heading = cheading - heading ;
 //Recently commented below
 //Serial.print("delta_heading: "); Serial.println(delta_heading);
 
+if(ultrasonic1.Ranging(CM)<= 304.8 && ultrasonic2.Ranging(CM)>= 304.8){ //You are in the grid 
+  if(ultrasonic1.Ranging(CM)<= 152.4){ //You are in left-half of grid
+    if(ultrasonic2.Ranging(CM) <= 457.2){ //Y is reading from bottom wall 457.2 is 15 ft
+     Serial.println("Quadrant 3");
+     delay(100); 
+    }
+    else if(ultrasonic2.Ranging(CM)<= 609.6){ //Y reading from bottom wall and 609.6 is 20 ft
+     Serial.println("Quadrant 2");
+     delay(100);
+    }     
+  }
+  else if(ultrasonic1.Ranging(CM) > 152.4){ //You are in right-half of grid
+    if(ultrasonic2.Ranging(CM) <= 457.2){ //Y reading distance 15 ft from bottom
+      Serial.println("Quadrant 4");
+      delay(100);  
+    }
+    else if(ultrasonic2.Ranging(CM)<= 609.6){ //Y reading distance 20 ft from bottom half
+      Serial.println("Quadrant 1");
+      delay(100);
+    }       
+  }
+}
+
 
 if(ultrasonic3.Ranging(CM)>= 45 && ultrasonic3.Ranging(CM)<= 46){
   Serial.println("Obstacle 1");
@@ -138,7 +161,9 @@ else if(ultrasonic3.Ranging(CM)>= 91 && ultrasonic3.Ranging(CM)<= 92){
   delay(100);
   }
 else if(ultrasonic3.Ranging(CM)>= 137 && ultrasonic3.Ranging(CM)<= 138){
-  Serial.println("Obstacle3");
+  Serial.println("Obstacle 3");
   delay(100);
   }
 }
+
+
