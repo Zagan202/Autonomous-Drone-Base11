@@ -9,7 +9,6 @@ double roll, pitch,heading, croll, cpitch, cheading;
 int quadColor;
 //I commented
 //Lawrence Commented
-double Obstacle1;
 
 Ultrasonic ultrasonic1(13,12); //X sensor
 Ultrasonic ultrasonic2(11,10); //Y Sensor
@@ -21,6 +20,10 @@ Ultrasonic ultrasonic3(9,8); //Z sensor
 #define PRINT_RAW
 //define PRINT_SPEED 250 
 #define DECLINATION -12 
+
+bool isLevel(float pitch, float roll);
+int quadCheck(bool level, Ultrasonic us1, Ultrasonic us2);
+int obstacleCheck(Ultrasonic us3);
 
 void setup() {
 
@@ -128,6 +131,153 @@ float delta_heading = cheading - heading ;
 //Recently commented below
 //Serial.print("delta_heading: "); Serial.println(delta_heading);
 
+//Testing isLevel function
+bool Leveled = isLevel(delta_pitch,delta_roll);
+
+int obs = obstacleCheck(ultrasonic3);
+
+if (quadCheck(Leveled,ultrasonic1,ultrasonic2)>0){
+    switch (quadCheck(Leveled,ultrasonic1,ultrasonic2)){
+        case 1:
+          Serial.println("Quadrant 1");
+          if(obs>0){
+          Serial.print(" Obstacle: ");Serial.println(obs);
+          }
+          Serial.println("-------------------");
+          break;
+        case 2:
+          Serial.println("Quadrant 2");
+          if(obs>0){
+          Serial.print("Obstacle: ");Serial.println(obs); 
+          }
+          Serial.println("-------------------");
+          break;
+        case 3:
+           Serial.println("Quadrant 3");
+           if(obs>0){
+           Serial.print("Obstacle: ");Serial.println(obs); 
+           }
+           Serial.println("-------------------");
+           break;
+        case 4:
+           Serial.println("Quadrant 4");
+           if(obs>0){
+           Serial.print("Obstacle: ");Serial.println(obs);
+           }
+           Serial.println("-------------------"); 
+           break;
+        default: 
+          // if nothing else matches, do the default
+          // default is optional
+        break;
+      }
+      delay(150);
+    } 
+}
+
+bool isLevel(float pitch, float roll){
+  if(pitch>=-10 && pitch<=10){
+     if(roll>=-10 && roll<=10){
+      return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+    else return false;
+}
+
+int quadCheck(bool level, Ultrasonic us1, Ultrasonic us2){
+  if(level){
+    if(us1.Ranging(CM)<= 304.8 && us2.Ranging(CM)>= 304.8)
+    { //You are in the grid 
+      if(us1.Ranging(CM)<= 152.4){ //You are in left-half of grid
+        if(us2.Ranging(CM) <= 457.2){ //Y is reading from bottom wall 457.2 is 15 ft
+            //Serial.println("Quadrant 3");
+            return 3;
+            delay(100);}
+        else if(us2.Ranging(CM)<= 609.6){ //Y reading from bottom wall and 609.6 is 20 ft
+            //Serial.println("Quadrant 2");
+            return 2;
+            delay(100);}     
+      }
+    else if(us1.Ranging(CM) > 152.4){ //You are in right-half of grid
+          if(us2.Ranging(CM) <= 457.2){ //Y reading distance 15 ft from bottom
+              //Serial.println("Quadrant 4");
+              return 4;
+              delay(100);}
+          else if(us2.Ranging(CM)<= 609.6){ //Y reading distance 20 ft from bottom half
+                    //Serial.println("Quadrant 1");
+                    return 1;
+                    delay(100);}       
+      }
+    }
+  }
+  else{
+      return 0;  
+      }
+}
+
+int obstacleCheck(Ultrasonic us3){
+  if(us3.Ranging(CM)>= 153 && us3.Ranging(CM)<= 198){
+  //Serial.println("Obstacle 1");
+  return 1;
+  delay(100);
+  }
+else if(us3.Ranging(CM)>= 107 && us3.Ranging(CM)<= 152){
+  //Serial.println("Obstacle 2");
+  return 2;
+  delay(100);
+  }
+else if(us3.Ranging(CM)>= 60 && us3.Ranging(CM)<= 106){
+  //Serial.println("Obstacle 3");
+  return 3;
+  delay(100);
+  }
+else{
+  return 0;
+  }
+}
+
+
+//Test Code Below DONT UNCOMMENT
+/*
+if(isLevel(delta_pitch,delta_roll)){
+  Serial.println("We are level!");
+  }
+  else{
+    Serial.println("We are NOT level");
+    }
+*/
+//Testing quadCheck function
+/*
+ if(quadCheck(Leveled,ultrasonic1,ultrasonic2)==1){
+    Serial.println("Quadrant 1"); 
+    Serial.println(quadCheck(Leveled,ultrasonic1,ultrasonic2));
+
+  }
+ else if(quadCheck(Leveled,ultrasonic1,ultrasonic2)==2){
+    Serial.println("Quadrant 2");
+    Serial.println(quadCheck(Leveled,ultrasonic1,ultrasonic2));
+
+  }
+  else if(quadCheck(Leveled,ultrasonic1,ultrasonic2)==3){
+    Serial.println("Quadrant 3");
+    Serial.println(quadCheck(Leveled,ultrasonic1,ultrasonic2));
+
+  }
+  else if(quadCheck(Leveled,ultrasonic1,ultrasonic2)==4){
+    Serial.println("Quadrant 4");
+    Serial.println(quadCheck(Leveled,ultrasonic1,ultrasonic2));
+
+  }
+  else if(quadCheck(Leveled,ultrasonic1,ultrasonic2)==0){
+    Serial.println("No Quadrant");
+  }
+  */
+  
+/*
 if(ultrasonic1.Ranging(CM)<= 304.8 && ultrasonic2.Ranging(CM)>= 304.8){ //You are in the grid 
   if(ultrasonic1.Ranging(CM)<= 152.4){ //You are in left-half of grid
     if(ultrasonic2.Ranging(CM) <= 457.2){ //Y is reading from bottom wall 457.2 is 15 ft
@@ -166,4 +316,22 @@ else if(ultrasonic3.Ranging(CM)>= 137 && ultrasonic3.Ranging(CM)<= 138){
   }
 }
 
-
+*/
+/*
+if(quadCheck(Leveled,ultrasonic1,ultrasonic2)==0){
+    Serial.println("NOT in any quadrant");
+    delay(300);
+  }
+if (quadCheck(Leveled,ultrasonic1,ultrasonic2)>= 1 || quadCheck(Leveled,ultrasonic1,ultrasonic2)<= 4){
+      
+      Serial.print("Were in quadrant ");Serial.print(quadCheck(Leveled,ultrasonic1,ultrasonic2));
+          if (obstacleCheck(ultrasonic3)== 0){
+              Serial.println(" I dont see an obstacle");
+                  delay(300);
+            }
+           else if(obstacleCheck(ultrasonic3)>= 1 || obstacleCheck(ultrasonic3)<= 3){
+              Serial.print(" I see obstacle ");Serial.println(obstacleCheck(ultrasonic3));
+              delay(300);
+            }
+    }
+*/
